@@ -1,5 +1,9 @@
 # 光伏发电效率实时预测与智能调配系统
 
+**公开访问（无需登录）：https://chinaoil-photovoltaic-power.redcrown2.chatgpt.site/**
+
+平台已公开托管；本仓库保留完整源码与GitHub Pages工作流，Pages首次启用仍需仓库管理员设置。
+
 百口泉采油厂应用场景的研究、技术交流与联合试点平台。风格延续ChinaOil Sense的红白色侧栏与卡片布局。
 
 ## 能力
