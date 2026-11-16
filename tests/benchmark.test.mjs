@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {predictMLP,metrics,clamp} from '../src/core.mjs';
+const b=JSON.parse(fs.readFileSync(new URL('../data/benchmark.json',import.meta.url))),w=JSON.parse(fs.readFileSync(new URL('../data/model.json',import.meta.url)));
+test('browser inference reproduces exported MLP predictions on every test record',()=>{for(const r of b.test){let h=+r.time.slice(11,13),p=h>=21||h<4?0:clamp(predictMLP(r.input,w),0,1)*b.capacity;assert.ok(Math.abs(p-r.pred)<1e-8);}});
+test('test protocol matches PPT and measured baseline metrics',()=>{assert.deepEqual(b.split,[1645,480,560]);const r=b.test.filter(x=>x.day);assert.equal(r.length,257);const m=metrics(r.map(x=>x.actual),r.map(x=>x.pred));assert.ok(Math.abs(m.nrmse-17.23007527)<1e-6);assert.equal(b.bestEpoch,72);});
+test('each selectable model has its own validation-only residual calibration',()=>{for(const key of ['pred','ridge','persist']){assert.ok(b.quantilesByModel?.[key]?.['0.9']>0);assert.equal(b.validationResidualsByModel[key].length,b.validationDaytimeCount);}});

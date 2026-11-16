@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {taskGate,defaults} from '../src/core.mjs';
+test('same physical device cannot run two tasks or ignore a paused task',()=>{const t={id:'u1',type:'drone',regions:[1],battery:20};for(const status of ['running','paused'])assert.equal(taskGate(t,[{id:'u2',type:'drone',status}],defaults,90).allowed,false);assert.equal(taskGate(t,[{id:'r1',type:'robot',status:'running'}],defaults,90).allowed,true);});
+test('task start respects device-specific remaining battery and return reserve',()=>{const t={id:'u1',type:'drone',regions:[1],battery:25};assert.equal(taskGate(t,[],defaults,40).allowed,false);assert.equal(taskGate(t,[],defaults,90).allowed,true);});
