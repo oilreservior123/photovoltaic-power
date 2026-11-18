@@ -1,9 +1,9 @@
 export const C={red:'#b33b45',blue:'#4c82ac',gold:'#be985c',green:'#2f8b7c',purple:'#8c72ae',gray:'#a6acb2'};
 export const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt=x=>Math.abs(x)>=1000?(x/1000).toFixed(1)+'k':Math.abs(x)>=10?x.toFixed(0):x.toFixed(1);
+const fmt=x=>Math.abs(x)>0&&Math.abs(x)<.01?x.toExponential(1):Math.abs(x)>=1000?(x/1000).toFixed(1)+'k':Math.abs(x)>=10?x.toFixed(0):x.toFixed(1);
 const tag=(label,color,band=false)=>`<span><i class="${band?'band':''}" style="background:${color}"></i>${esc(label)}</span>`;
-export function lineChart({labels,series,unit='',height=245,band,ymin=0}){
- const w=680,h=height,p={l:48,r:17,t:25,b:33},iw=w-p.l-p.r,ih=h-p.t-p.b,n=labels.length,values=series.flatMap(s=>s.values).concat(band?band.hi:[]),max=Math.max(...values,1)*1.12,min=Math.min(ymin,...values),Y=v=>p.t+(max-v)/(max-min)*ih,X=i=>p.l+i/Math.max(1,n-1)*iw;
+export function lineChart({labels,series,unit='',height=245,band,ymin=0,autoScale=false}){
+ const w=680,h=height,p={l:48,r:17,t:25,b:33},iw=w-p.l-p.r,ih=h-p.t-p.b,n=labels.length,values=series.flatMap(s=>s.values).concat(band?band.hi:[]),max=Math.max(...values,autoScale?1e-12:1)*1.12,min=Math.min(ymin,...values),Y=v=>p.t+(max-v)/(max-min)*ih,X=i=>p.l+i/Math.max(1,n-1)*iw;
  let svg=`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(series.map(s=>s.name).join('、'))}趋势图"><text x="${p.l}" y="12" class="chart-unit">${esc(unit)}</text>`;
  for(let j=0;j<=4;j++){let v=min+(max-min)*j/4,y=Y(v);svg+=`<path d="M${p.l} ${y}H${w-p.r}" stroke="#e9ecee" stroke-dasharray="3 4"/><text x="${p.l-9}" y="${y+3}" text-anchor="end" class="chart-axis">${fmt(v)}</text>`;}
  if(band){const path=band.hi.map((v,i)=>`${i?'L':'M'}${X(i)},${Y(v)}`).join('')+band.lo.map((_,i)=>{const j=n-i-1;return `L${X(j)},${Y(band.lo[j])}`;}).join('')+'Z';svg+=`<path d="${path}" fill="${C.blue}" opacity=".12"/>`;}
